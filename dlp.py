@@ -59,7 +59,7 @@ def list_episodes(episodes):
         print('[title]:       ', entry['title'])
         print('[published]:   ', entry['published'])
         print('[summary]:     ', strip_tags(entry['summary']))
-        print('[description]: ', strip_tags(entry['details']))
+        print('[description]: ', strip_tags(entry['description']))
 #       print('[content[0]]:  ', strip_tags(entry['content'][0]['value']))
 #       print('[content[1]]:  ', strip_tags(entry['content'][1]['value']))
         print('[href]:        ', entry['enclosures'][0].href)
