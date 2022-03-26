@@ -5,16 +5,8 @@ import feedparser
 import questionary
 import requests
 
-import StripTags
-#
-# parser = argparse.ArgumentParser(prog='dlp', description='Podcast Downloader')
-# parser.add_argument('-f','--feed', help='URL of podcast\' RSS feed')
-# parser.add_argument('-p','--podcasts', nargs='?', help='Select from list of podcasts [in file -p FILENAME]')
-# parser.add_argument('-e','--episodes', help='Select episodes from podcast', action='store_true')
-# parser.add_argument('-l','--list', nargs='?', help='List available podcast episodes', type=int, default=True)
-# parser.add_argument('-d','--download', nargs='?', help='Download latest N podcast episodes', type=int)
-# args = parser.parse_args()
-#
+from striptags import strip_tags
+
 parser = argparse.ArgumentParser(prog='dlp', description='Podcast Downloader')
 parser.add_argument('-f','--feed', nargs='?', help='URL of podcast\' RSS feed')
 parser.add_argument('-p','--podcasts', nargs='?', help='Select from list of podcasts in file [-p FILENAME]', default=True)
@@ -64,12 +56,13 @@ def select_episodes(episodes):
 
 def list_episodes(episodes):
     for entry in episodes:
-        print('[title]:      ', entry['title'])
-        print('[published]:  ', entry['published'])
-        print('[summary]:    ', StripTags.strip_tags(entry['summary']))
-        print('[content[0]]: ', StripTags.strip_tags(entry['content'][0]['value']))
-        print('[content[1]]: ', StripTags.strip_tags(entry['content'][1]['value']))
-        print('[href]:       ', entry['enclosures'][0].href)
+        print('[title]:       ', entry['title'])
+        print('[published]:   ', entry['published'])
+        print('[summary]:     ', strip_tags(entry['summary']))
+        print('[description]: ', strip_tags(entry['details']))
+#       print('[content[0]]:  ', strip_tags(entry['content'][0]['value']))
+#       print('[content[1]]:  ', strip_tags(entry['content'][1]['value']))
+        print('[href]:        ', entry['enclosures'][0].href)
 
 def download_episodes(episodes):
     episodes = get_episodes(rss_url)
@@ -98,32 +91,10 @@ else:
     rss_url = args.feed
 print(rss_url)
 
-# if args.episodes:
-#     episodes = get_episodes(rss_url)
-#     selected_episodes = select_episodes(episodes)
-#
-#     for e in selected_episodes:
-#         i = int(e.split()[0])
-#         print('[title]:     ', episodes[i]['title'])
-#         print('[published]: ', episodes[i]['published'])
-#         print('[summary]:   ', episodes[i]['summary'])
-#         print('[content]:   ', episodes[i]['content'])
-#         print('[duration]:  ', episodes[i]['itunes_duration'])
-#         print('[href]:      ', episodes[i]['enclosures'][0].href)
-
 if args.quiet == False:
     episodes = get_episodes(rss_url)
     selected_episodes = select_episodes(episodes)
     list_episodes(selected_episodes)
-    # for entry in episodes[0:args.quiet]:
-        # for item in entry.items():
-        #     print(item)
-        # print(entry['title'])
-        # print('[published]: ', entry['published'])
-        # print('[summary]: ', entry['summary'])
-        # print('[content]: ', entry['content'])
-        # print('[duration]: ', entry['itunes_duration'])
-        # print('[href]: ', entry['enclosures'][0].href)
 
 if args.download:
     episodes = get_episodes(rss_url)
