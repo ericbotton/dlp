@@ -91,14 +91,14 @@ else:
     rss_url = args.feed
 print(rss_url)
 
+episodes = get_episodes(rss_url)
+selected_episodes = select_episodes(episodes)
+
 if args.quiet == False:
-    episodes = get_episodes(rss_url)
-    selected_episodes = select_episodes(episodes)
     list_episodes(selected_episodes)
 
-if args.download:
-    episodes = get_episodes(rss_url)
-    for entry in episodes:
+if args.download != False:
+    for entry in selected_episodes:
         print('downloading: ', entry['title'], '\nURL: ', entry['enclosures'][0].href)
         filename = str(entry['enclosures'][0].href).split('/')[-1]; print(filename)
         dlreq = requests.get(entry['enclosures'][0].href)
