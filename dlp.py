@@ -64,14 +64,19 @@ def list_episodes(episodes):
 #       print('[content[1]]:  ', strip_tags(entry['content'][1]['value']))
         print('[href]:        ', entry['enclosures'][0].href)
 
-def download_episodes(episodes):
-    episodes = get_episodes(rss_url)
-    for entry in episodes[0:args.download]:
-        print('downloading: ', entry['title'], ' --> ', entry['enclosures'][0].href)
-        filename = str(entry['enclosures'][0].href).split('/')[-1]; print(filename)
-        dlreq = requests.get(entry['enclosures'][0].href)
-        with open(filename, 'wb') as dl:
-            dl.write(dlreq.content)
+def rename_filename(filename):
+    forbiden_characters = '<>:"/|\?*&'
+    for replace_character in forbiden_characters:
+        filename = filename.replace(replace_character, '_')
+    return filename
+
+def download_episode(entry):
+    filename = str(entry['enclosures'][0].href).split('/')[-1]
+    filename = rename_filename(filename)
+    print(filename)
+    dlreq = requests.get(entry['enclosures'][0].href)
+    with open(filename, 'wb') as dl:
+        dl.write(dlreq.content)
 
 print('| feed=' + str(args.feed),
  '| podcasts=' + str(args.podcasts),
@@ -100,7 +105,5 @@ if args.quiet == False:
 if args.download != False:
     for entry in selected_episodes:
         print('downloading: ', entry['title'], '\nURL: ', entry['enclosures'][0].href)
-        filename = str(entry['enclosures'][0].href).split('/')[-1]; print(filename)
-        dlreq = requests.get(entry['enclosures'][0].href)
-        with open(filename, 'wb') as dl:
-            dl.write(dlreq.content)
+        download_episode(entry)
+
